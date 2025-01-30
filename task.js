@@ -34,20 +34,35 @@ function NOK(A) {
   return a;
 }
 
-function minOperarionOfNum(num) {
-  num = BigInt(num);
+function minOperarionOfnum(num1, num2 = 0, num3 = 0, array = [...lineTwo]) {
+  let minIndex;
+  num1 = BigInt(num1);
   let minOperation = Infinity,
     operations;
-  lineTwo.forEach((element) => {
-    if (element <= num) {
-      operations = num - element;
+  array.forEach((element, index) => {
+    if (element <= num1) {
+      operations = num1 - element;
     } else {
-      let rest = element % num;
-      operations = rest < Number(num) / 2 ? rest : num - rest;
+      let rest = element % num1;
+      operations = rest < Number(num1) / 2 ? rest : num1 - rest;
     }
-    minOperation = minOperation < operations ? minOperation : operations;
+    if (minOperation > operations) {
+      minOperation = operations;
+      minIndex = index;
+    }
   });
-  return minOperation;
+  array.splice(minIndex, 1);
+  if (num2) {
+    let min2;
+    [min2, array] = [...minOperarionOfnum(num2, null, null, array)];
+    minOperation += min2;
+  }
+  if (num3) {
+    let min3;
+    [min3, array] = [...minOperarionOfnum(num3, null, null, array)];
+    minOperation += min3;
+  }
+  return [minOperation, array];
 }
 
 function globalMinOperations() {
@@ -64,18 +79,21 @@ function globalMinOperations() {
   nokFirstTwo = NOK([x, y]);
   nokLastTwo = NOK([y, z]);
 
-  sumNokAll = minOperarionOfNum(nokAll);
+  sumNokAll = minOperarionOfnum(nokAll)[0];
   if (sumNokAll == 0) return 0;
   if (nokFirstTwo !== nokAll) {
-    sumFirst = minOperarionOfNum(nokFirstTwo) + minOperarionOfNum(z);
+    // sumFirst = minOperarionOfnum(nokFirstTwo) + minOperarionOfnum(z);
+    sumFirst = minOperarionOfnum(nokFirstTwo, z)[0];
     if (sumFirst == 0) return 0;
   }
   if (nokLastTwo !== nokAll) {
-    sumLast = minOperarionOfNum(nokLastTwo) + minOperarionOfNum(x);
+    // sumLast = minOperarionOfnum(nokLastTwo) + minOperarionOfnum(x);
+    sumLast = minOperarionOfnum(nokLastTwo, x)[0];
     if (sumLast == 0) return 0;
   }
   if (x !== nokAll && y !== nokAll && z !== nokAll) {
-    sumAll = minOperarionOfNum(x) + minOperarionOfNum(y) + minOperarionOfNum(z);
+    // sumAll = minOperarionOfnum(x) + minOperarionOfnum(y) + minOperarionOfnum(z);
+    sumAll = minOperarionOfnum(x, y, z)[0];
     if (sumAll == 0) return 0;
   }
   answerOperation = [sumNokAll, sumFirst, sumLast, sumAll].reduce((a, b) =>
